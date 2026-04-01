@@ -4,7 +4,8 @@ let client;
 
 function getClient() {
   if (!process.env.GEMINI_API_KEY) {
-    const err = new Error('Gemini is not configured (missing GEMINI_API_KEY)');
+    console.error('CRITICAL: GEMINI_API_KEY is not set in environment variables.');
+    const err = new Error('AI Service is temporarily unavailable (Missing Configuration)');
     err.statusCode = 503;
     throw err;
   }
@@ -26,7 +27,7 @@ Give actionable, short paragraphs. Prefer bullet lists for steps. If asked for c
   }));
 
   const response = await gemini.models.generateContent({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3-flash',
     contents: formattedContents,
     config: {
       systemInstruction: system,
@@ -35,7 +36,7 @@ Give actionable, short paragraphs. Prefer bullet lists for steps. If asked for c
     }
   });
 
-  return response.text || '';
+  return response.text || 'I apologize, I am unable to generate a response at the moment.';
 }
 
 export async function mockInterviewTurn({ history, userProfile }) {
@@ -55,7 +56,7 @@ Format scores line as: SCORE: X/10`;
   }));
 
   const response = await gemini.models.generateContent({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3-flash',
     contents: formattedContents,
     config: {
       systemInstruction: system,
@@ -64,7 +65,7 @@ Format scores line as: SCORE: X/10`;
     }
   });
 
-  return response.text || '';
+  return response.text || 'The interactive session had a slight hiccup. Please try your last response again.';
 }
 
 export async function analyzeResume(text) {
@@ -72,7 +73,7 @@ export async function analyzeResume(text) {
   const system = 'You are a resume reviewer for tech placements. Output: (1) Strengths (2) Gaps (3) 5 bullet improvements (4) ATS-style keywords to add. Keep under 350 words.';
   
   const response = await gemini.models.generateContent({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3-flash',
     contents: [
       { role: 'user', parts: [{ text: text.slice(0, 12000) }] }
     ],
@@ -83,5 +84,5 @@ export async function analyzeResume(text) {
     }
   });
 
-  return response.text || '';
+  return response.text || 'Analysis currently unavailable. Please check back shortly.';
 }
