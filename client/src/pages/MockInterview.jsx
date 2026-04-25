@@ -3,7 +3,9 @@ import { io } from 'socket.io-client';
 import { api, getToken } from '../api.js';
 import { Card } from '../components/Card.jsx';
 
-const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+// In production (Render), socket server is on the same origin as the page.
+// In local dev, VITE_SOCKET_URL in client/.env overrides this (e.g. http://localhost:5000).
+const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
 
 export function MockInterview() {
   const [mode, setMode] = useState('rest');

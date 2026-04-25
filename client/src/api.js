@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// In production (Render), frontend & backend share the same origin, so '/api' works.
+// In local dev, VITE_API_URL in client/.env overrides this (e.g. http://localhost:5000/api).
+const baseURL = import.meta.env.VITE_API_URL || '/api';
 
 export const api = axios.create({ baseURL });
 
