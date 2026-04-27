@@ -17,25 +17,33 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Allowed CORS origins — includes localhost for dev and CLIENT_URL for separate deployments.
-// Same-origin requests (no Origin header) are always allowed — this covers the Render setup
-// where Express serves both the frontend and API from the same domain.
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  process.env.CLIENT_URL,
-  process.env.FRONTEND_URL,
-].filter(Boolean);
+];
+
+if (process.env.CLIENT_URL) {
+  allowedOrigins.push(process.env.CLIENT_URL.trim().replace(/\/$/, ''));
+}
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL.trim().replace(/\/$/, ''));
+}
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // No origin = same-origin request (browser on same domain) → always allow
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      // In production deployments, we prefer explicit CLIENT_URL config.
-      // If that variable is missing, allow all origins rather than breaking the app.
+      
+      const cleanOrigin = origin.trim().replace(/\/$/, '');
+      
+      if (allowedOrigins.includes(cleanOrigin)) return callback(null, true);
+      
+      // Bulletproof fallback: If the origin contains our frontend URL, allow it
+      if (cleanOrigin.includes('placement-tracker-frontend')) return callback(null, true);
+
+      // If env vars are completely missing, allow everything so the app doesn't break
       if (!process.env.CLIENT_URL && !process.env.FRONTEND_URL) return callback(null, true);
+      
       callback(new Error(`CORS: origin ${origin} not allowed`));
     },
     credentials: true,
