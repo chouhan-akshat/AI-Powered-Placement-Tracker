@@ -17,8 +17,10 @@ async function main() {
   await connectDB();
 
   const server = http.createServer(app);
+  const socketOrigin = process.env.CLIENT_URL || process.env.FRONTEND_URL || 'http://localhost:5173';
+
   const io = new Server(server, {
-    cors: { origin: process.env.CLIENT_URL || 'http://localhost:5173', methods: ['GET', 'POST'] },
+    cors: { origin: socketOrigin, methods: ['GET', 'POST'] },
   });
 
   io.use(async (socket, next) => {

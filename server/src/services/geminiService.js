@@ -27,7 +27,7 @@ Give actionable, short paragraphs. Prefer bullet lists for steps. If asked for c
   }));
 
   const response = await gemini.models.generateContent({
-    model: 'gemini-3-flash',
+    model: 'gemini-2.5-flash',
     contents: formattedContents,
     config: {
       systemInstruction: system,
@@ -56,7 +56,7 @@ Format scores line as: SCORE: X/10`;
   }));
 
   const response = await gemini.models.generateContent({
-    model: 'gemini-3-flash',
+    model: 'gemini-2.5-flash',
     contents: formattedContents,
     config: {
       systemInstruction: system,
@@ -73,7 +73,7 @@ export async function analyzeResume(text) {
   const system = 'You are a resume reviewer for tech placements. Output: (1) Strengths (2) Gaps (3) 5 bullet improvements (4) ATS-style keywords to add. Keep under 350 words.';
   
   const response = await gemini.models.generateContent({
-    model: 'gemini-3-flash',
+    model: 'gemini-2.5-flash',
     contents: [
       { role: 'user', parts: [{ text: text.slice(0, 12000) }] }
     ],
